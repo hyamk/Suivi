@@ -4,16 +4,19 @@
 
 const STORAGE_KEY = 'sleep_log_v1';
 const ACTIVE_KEY  = 'sleep_log_active';
+const VALIDATED_KEY = 'sleep_log_validated';
 
 let sessions    = [];   // array of {id, start, end} (ISO strings)
 let activeStart = null; // Date when sleep started, null if awake
 let elapsedTimer = null;
+let validatedSessions = []; // array of validated session IDs
 
 /* ──────────────────────────────────────────── */
 /*  INIT                                        */
 /* ──────────────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', () => {
   loadData();
+  loadValidated();
   startClock();
 
   // Restore an in-progress session across page reloads
@@ -53,6 +56,17 @@ function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
 }
 
+function loadValidated() {
+  try {
+    const raw = localStorage.getItem(VALIDATED_KEY);
+    validatedSessions = raw ? JSON.parse(raw) : [];
+  } catch { validatedSessions = []; }
+}
+
+function saveValidated() {
+  localStorage.setItem(VALIDATED_KEY, JSON.stringify(validatedSessions));
+}
+
 /* ──────────────────────────────────────────── */
 /*  SESSION CONTROL                             */
 /* ──────────────────────────────────────────── */
@@ -83,10 +97,30 @@ function finishSession() {
   render();
 }
 
+function deleteSession(sessionId) {
+  sessions = sessions.filter(s => s.id !== sessionId);
+  validatedSessions = validatedSessions.filter(id => id !== sessionId);
+  saveData();
+  saveValidated();
+  showToast('Session deleted');
+  render();
+}
+
+function validateSession(sessionId) {
+  if (!validatedSessions.includes(sessionId)) {
+    validatedSessions.push(sessionId);
+    saveValidated();
+    showToast('Session validated ✓');
+    render();
+  }
+}
+
 function clearAll() {
   if (!confirm('Delete ALL sleep sessions? This cannot be undone.')) return;
   sessions = [];
+  validatedSessions = [];
   saveData();
+  saveValidated();
   if (activeStart) {
     activeStart = null;
     localStorage.removeItem(ACTIVE_KEY);
@@ -162,10 +196,12 @@ function renderLog() {
 
   let html = `
     <div class="log-header">
+      <span>ACTIONS</span>
       <span>DATE</span>
       <span>SLEEP</span>
       <span>WAKE</span>
       <span>DURATION</span>
+      <span></span>
     </div>`;
 
   for (const row of rows) {
@@ -177,12 +213,30 @@ function renderLog() {
       ? formatDuration(new Date(row.end) - new Date(row.start))
       : '';
 
+    const isLive = !row.end;
+    const isValidated = validatedSessions.includes(row.id);
+
+    let actionsHtml = '';
+    if (!isLive) {
+      actionsHtml = `
+        <div class="entry-actions">
+          <button class="btn-entry-erase" onclick="deleteSession(${row.id})">🗑 Erase</button>
+          <button class="btn-entry-validate${isValidated ? ' locked' : ''}" 
+                  onclick="${isValidated ? '' : `validateSession(${row.id})`}" 
+                  ${isValidated ? 'disabled' : ''}>
+            ${isValidated ? '✓ Done' : 'Validé'}
+          </button>
+        </div>`;
+    }
+
     html += `
       <div class="log-entry">
+        ${actionsHtml}
         <span class="entry-date">${formatDate(new Date(row.start))}</span>
         <span class="entry-start">${formatTime(new Date(row.start))}</span>
         ${wakeCell}
         <span class="entry-duration">${dur}</span>
+        <span></span>
       </div>`;
   }
 
@@ -269,12 +323,13 @@ function renderTimeline() {
 function exportCSV() {
   if (sessions.length === 0) { showToast('Nothing to export yet.'); return; }
 
-  const header = 'Date,Sleep Time,Wake Time,Duration\n';
+  const header = 'Date,Sleep Time,Wake Time,Duration,Validated\n';
   const rows = sessions.map(s => {
     const start = new Date(s.start);
     const end   = s.end ? new Date(s.end) : null;
     const dur   = end ? formatDuration(end - start) : '';
-    return `"${formatDate(start)}","${formatTime(start)}","${end ? formatTime(end) : ''}","${dur}"`;
+    const validated = validatedSessions.includes(s.id) ? 'Yes' : 'No';
+    return `"${formatDate(start)}","${formatTime(start)}","${end ? formatTime(end) : ''}","${dur}","${validated}"`;
   });
 
   const blob = new Blob([header + rows.join('\n')], { type: 'text/csv' });
