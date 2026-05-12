@@ -1,10 +1,10 @@
 :root {
-  --bg:         #f5f5f5;
-  --bg2:        #ffffff;
-  --bg3:        #ececec;
-  --bg4:        #e8e8e8;
-  --border:     #d0d0d0;
-  --border2:    #c0c0c0;
+  --bg:         #e3f2fd;
+  --bg2:        #f0f8ff;
+  --bg3:        #e1f5fe;
+  --bg4:        #b3e5fc;
+  --border:     #90caf9;
+  --border2:    #64b5f6;
 
   --blue:       #3b82f6;
   --blue-glow:  rgba(59,130,246,0.35);
@@ -17,7 +17,7 @@
 
   --text:       #1f2937;
   --text-mid:   #4b5563;
-  --text-dim:   #9ca3af;
+  --text-dim:   #7986cb;
 
   --font-mono:  'Roboto Mono', monospace;
   --font-ui:    'Roboto', sans-serif;
@@ -55,7 +55,7 @@ body::before {
   transform: translateX(-50%);
   width: 600px;
   height: 300px;
-  background: radial-gradient(ellipse, rgba(59,130,246,0.02) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(59,130,246,0.05) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -65,7 +65,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255,255,255,0.95);
+  background: rgba(240,248,255,0.95);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
@@ -374,7 +374,7 @@ main {
 
 .log-header {
   display: grid;
-  grid-template-columns: 88px 1fr 1fr 1fr 80px;
+  grid-template-columns: 60px 88px 1fr 1fr 1fr 120px;
   gap: 8px;
   padding: 9px 18px;
   border-bottom: 1px solid var(--border);
@@ -391,7 +391,7 @@ main {
 
 .log-entry {
   display: grid;
-  grid-template-columns: 88px 1fr 1fr 1fr 80px;
+  grid-template-columns: 60px 88px 1fr 1fr 1fr 120px;
   gap: 8px;
   padding: 12px 18px;
   border-bottom: 1px solid var(--border);
@@ -400,6 +400,61 @@ main {
 }
 .log-entry:last-child { border-bottom: none; }
 .log-entry:hover { background: var(--bg3); }
+
+.entry-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.btn-entry-erase {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 6px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-entry-erase:hover {
+  background: #fecaca;
+  border-color: #f87171;
+  transform: scale(1.05);
+}
+
+.btn-entry-validate {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #16a34a;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 6px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-entry-validate:hover {
+  background: #bbf7d0;
+  border-color: #4ade80;
+  transform: scale(1.05);
+}
+
+.btn-entry-validate.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-entry-validate.locked:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+  transform: none;
+}
 
 .entry-date {
   font-family: var(--font-mono);
@@ -420,56 +475,6 @@ main {
   font-size: 11px;
   color: var(--cyan);
   text-align: right;
-}
-
-.entry-actions {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
-}
-
-.btn-entry-erase {
-  background: #fee2e2;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  padding: 5px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.btn-entry-erase:hover {
-  background: #fecaca;
-  border-color: #f87171;
-}
-
-.btn-entry-validate {
-  background: #dcfce7;
-  border: 1px solid #86efac;
-  color: #16a34a;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  padding: 5px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.btn-entry-validate:hover {
-  background: #bbf7d0;
-  border-color: #4ade80;
-}
-
-.btn-entry-validate.locked {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-entry-validate.locked:hover {
-  background: #dcfce7;
-  border-color: #86efac;
 }
 
 /* === EMPTY STATE === */
@@ -510,7 +515,7 @@ main {
 /* === RESPONSIVE === */
 @media (max-width: 540px) {
   .log-header, .log-entry {
-    grid-template-columns: 70px 1fr 1fr 60px;
+    grid-template-columns: 60px 70px 1fr 1fr 100px;
   }
   .log-header span:nth-child(4),
   .entry-duration { display: none; }
