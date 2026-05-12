@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sleep Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="stars" aria-hidden="true"></div>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="moon-icon">🌙</span>
+        <span class="logo-text">SLEEP LOG</span>
+      </div>
+      <div class="live-clock" id="liveClock">--:--:--</div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- CONTROL PANEL -->
+    <section class="card control-card">
+      <div class="card-label">SLEEP CONTROL</div>
+      <div class="control-body">
+
+        <div class="status-row">
+          <div class="status-indicator" id="statusIndicator">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="status-text" id="statusText">AWAKE</span>
+          </div>
+          <div class="session-meta" id="sessionMeta" style="display:none">
+            <div class="meta-item">
+              <span class="meta-label">FELL ASLEEP</span>
+              <span class="meta-value" id="startVal">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">SLEEPING FOR</span>
+              <span class="meta-value" id="elapsedVal">00:00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-sleep" id="btnSleep" onclick="startSession()">
+            <span class="btn-icon">😴</span> SLEEP
+          </button>
+          <button class="btn btn-wake" id="btnWake" onclick="finishSession()" disabled>
+            <span class="btn-icon">☀️</span> WAKE UP
+          </button>
+        </div>
+
+        <div class="util-row">
+          <button class="btn-util" onclick="exportCSV()">⬇ Export CSV</button>
+          <button class="btn-util btn-util-danger" onclick="clearAll()">✕ Clear All</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DAILY TIMELINE -->
+    <section class="card timeline-card">
+      <div class="card-label">NIGHTLY TIMELINE <span class="card-label-sub">— 00:00 to 23:59</span></div>
+      <div class="timeline-legend">
+        <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:59</span>
+      </div>
+      <div id="timelineContainer" class="timeline-container">
+        <div class="empty-hint">No sleep sessions recorded yet.</div>
+      </div>
+    </section>
+
+    <!-- SLEEP LOG -->
+    <section class="card log-card">
+      <div class="card-label">SLEEP HISTORY</div>
+      <div id="logContainer" class="log-container">
+        <div class="empty-hint">No sleep sessions recorded yet.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
